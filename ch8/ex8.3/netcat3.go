@@ -23,18 +23,19 @@ func MustCopy(dst io.Writer, src io.Reader) {
 
 func main() {
 	conn := MustDail("tcp", "localhost:8000")
+	tcpConn := conn.(*net.TCPConn)
 	done := make(chan struct{})
 	go func() {
 		MustCopy(os.Stdout, conn)
-		log.Println("Done")
+		tcpConn.CloseRead()
+		log.Println("close tcpConn read")
 		done <- struct{}{}
 	}()
-	MustCopy(conn, os.Stdin)
-	log.Println("conn.Close()")
-	// type assertion
-	tcpConn := conn.(*net.TCPConn)
-	tcpConn.CloseWrite()
-	log.Println("read channal Done")
+	go func() {
+		MustCopy(conn, os.Stdin)
+		// type assertion
+		log.Println("close tcpConn write")
+		tcpConn.CloseWrite()
+	}()
 	<-done
-	tcpConn.CloseRead()
 }
