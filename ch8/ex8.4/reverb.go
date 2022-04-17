@@ -56,7 +56,7 @@ func handleEcho(tcpConn *net.TCPConn, input *bufio.Scanner, wg *sync.WaitGroup) 
 
 func handleConn(conn net.Conn) {
 	tcpConn := conn.(*net.TCPConn)
-	input := bufio.NewScanner(conn)
+	input := bufio.NewScanner(tcpConn)
 	var wg sync.WaitGroup
 	handleEcho(tcpConn, input, &wg)
 }

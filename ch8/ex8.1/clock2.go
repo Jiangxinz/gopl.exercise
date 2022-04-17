@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"gopl-exercise/common"
 	"io"
 	"log"
 	"net"
@@ -20,31 +21,9 @@ func handleConn(c net.Conn) {
 	}
 }
 
-type portFlag struct {
-	Port uint16
-}
-
-func (p *portFlag) String() string {
-	return fmt.Sprintf("port: %d", p.Port)
-}
-
-func (p *portFlag) Set(s string) error {
-	_, err := fmt.Sscanf(s, "%d", &p.Port)
-	fmt.Printf("s:(%s), p.Port=%d\n", s, p.Port)
-	return err
-}
-
-// 必须返回一个指针指向对应的变量，如果返回拷贝，则后续调用的Set函数会无法有效更新参数
-func PortFlag(name string, value uint16, usage string) *uint16 {
-	p := portFlag{value}
-	flag.CommandLine.Var(&p, name, usage)
-	fmt.Printf("after PortFlag: %d\n", p.Port)
-	return &p.Port
-}
-
 // 首先调用该函数，将变量port注册到flag.CommandLine.Var中，
 // 然后返回一个指针指向port
-var port = PortFlag("port", 8899, "the port")
+var port = common.PortFlag("port", 8899, "the port")
 
 func main() {
 	// 在这里会更新事先注册的参数port
