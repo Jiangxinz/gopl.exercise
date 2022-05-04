@@ -1,0 +1,33 @@
+package main
+
+import (
+	"fmt"
+	"strings"
+	"text/scanner"
+)
+
+type lexer struct {
+	scan  scanner.Scanner
+	token rune
+}
+
+func (lex *lexer) next()        { lex.token = lex.scan.Scan() }
+func (lex *lexer) text() string { return lex.scan.TokenText() }
+
+func main() {
+	expr := "sin(-x)*pow(1.5, -r)"
+	fmt.Println("expr = ", expr)
+	lex := new(lexer)
+	lex.scan.Init(strings.NewReader(expr))
+	lex.scan.Mode = scanner.ScanIdents | scanner.ScanInts | scanner.ScanFloats
+	for lex.next(); lex.token != scanner.EOF; lex.next() {
+		switch lex.token {
+		case scanner.Ident:
+			fmt.Printf("Ident:token = [%s]\n", (lex.text()))
+		case scanner.Int, scanner.Float:
+			fmt.Printf("Int、Float:token = [%s]\n", (lex.text()))
+		default:
+			fmt.Printf("default:token = [%s]\n", string(lex.token))
+		}
+	}
+}
